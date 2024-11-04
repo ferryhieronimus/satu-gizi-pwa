@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  school    School?  @relation(fields: [schoolId], references: [id])
+  schoolId  String?  @unique
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model School {
+  id        String   @id @default(cuid())
+  name      String
+  address   String
+  city      String
+  province  String
+  vendorId  String? 
+  vendor    Vendor?  @relation(fields: [vendorId], references: [id])
+  user      User?    // One-to-one relation with User
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Vendor {
+  id        String   @id @default(cuid())
+  name      String
+  address   String
+  city      String
+  province  String
+  email     String
+  phone     String
+  schools   School[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
